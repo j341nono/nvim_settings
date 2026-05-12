@@ -91,8 +91,6 @@ vim.o.expandtab = true
 vim.o.termguicolors = true
 vim.g.mapleader = " "
 
--- ⚠️ リモート環境なので unnamedplus は使わない
--- vim.o.clipboard = "unnamedplus"
 
 -- =============================================================================
 -- 4. プラグイン設定
@@ -215,6 +213,7 @@ vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
 -- =============================================================================
 -- 10. OSC52 クリップボード（★一番最後に設定★）
 -- =============================================================================
+vim.o.clipboard = "unnamedplus"
 pcall(function()
   local ok, osc52 = pcall(require, "vim.ui.clipboard.osc52")
   if ok then
@@ -225,10 +224,13 @@ pcall(function()
         ["*"] = osc52.copy("*"),
       },
       paste = {
-        ["+"] = osc52.paste("+"),
-        ["*"] = osc52.paste("*"),
+        ["+"] = function()
+          return { vim.fn.getreg('"') }
+        end,
+        ["*"] = function()
+          return { vim.fn.getreg('"') }
+        end,
       },
     }
   end
 end)
-
