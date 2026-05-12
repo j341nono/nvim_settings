@@ -72,6 +72,7 @@ require("lazy").setup({
             show = { git = true, folder = true, file = true, folder_arrow = true },
           },
         },
+        git = { ignore = false },
         filters = { dotfiles = false },
         actions = { open_file = { quit_on_open = false } },
       })
