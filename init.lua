@@ -1,3 +1,9 @@
+
+
+
+
+
+
 -- =============================================================================
 -- 1. Lazy.nvim のセットアップ (プラグインマネージャー)
 -- =============================================================================
@@ -24,6 +30,17 @@ vim.opt.rtp:prepend(lazypath)
 -- =============================================================================
 require("lazy").setup({
   "folke/tokyonight.nvim",
+
+  {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      image = {
+        enabled = true,
+      },
+    },
+  },
 
   "nvim-tree/nvim-web-devicons",
   "nvim-lualine/lualine.nvim",
