@@ -1,14 +1,7 @@
--- =============================================================================
--- 0. Leaderキー
--- =============================================================================
--- lazy.nvimがキーマップを登録する前に設定する
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 
--- =============================================================================
--- 1. Lazy.nvim のセットアップ（プラグインマネージャー）
--- =============================================================================
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -38,18 +31,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 
--- =============================================================================
--- 2. プラグイン一覧
--- =============================================================================
 require("lazy").setup({
-  -- ---------------------------------------------------------------------------
-  -- テーマ
-  -- ---------------------------------------------------------------------------
   "folke/tokyonight.nvim",
 
-  -- ---------------------------------------------------------------------------
-  -- UI
-  -- ---------------------------------------------------------------------------
   {
     "folke/snacks.nvim",
     priority = 1000,
@@ -67,21 +51,15 @@ require("lazy").setup({
   "folke/noice.nvim",
   "MunifTanjim/nui.nvim",
 
-  -- ---------------------------------------------------------------------------
-  -- Git：ファイル内の変更確認
-  -- ---------------------------------------------------------------------------
   {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
 
     opts = {
-      -- 行内の変更箇所も単語単位で強調する
       word_diff = true,
 
-      -- 未追跡ファイルにもGitSignsを表示する
       attach_to_untracked = true,
 
-      -- ファイル名変更後も追跡する
       watch_gitdir = {
         follow_files = true,
       },
@@ -99,9 +77,6 @@ require("lazy").setup({
           })
         end
 
-        -- ---------------------------------------------------------------------
-        -- 変更箇所の移動
-        -- ---------------------------------------------------------------------
         map("n", "]c", function()
           if vim.wo.diff then
             vim.cmd.normal({
@@ -124,9 +99,6 @@ require("lazy").setup({
           end
         end, "前のGit変更へ移動")
 
-        -- ---------------------------------------------------------------------
-        -- Hunk単位の操作
-        -- ---------------------------------------------------------------------
         map("n", "<leader>hp", gitsigns.preview_hunk, "変更をポップアップ表示")
         map("n", "<leader>hi", gitsigns.preview_hunk_inline, "変更をインライン表示")
 
@@ -134,7 +106,6 @@ require("lazy").setup({
         map("n", "<leader>hu", gitsigns.undo_stage_hunk, "直前のステージを戻す")
         map("n", "<leader>hr", gitsigns.reset_hunk, "変更を破棄")
 
-        -- Visualモードで選択した行だけ操作する
         map("v", "<leader>hs", function()
           gitsigns.stage_hunk({
             vim.fn.line("."),
@@ -149,15 +120,9 @@ require("lazy").setup({
           })
         end, "選択範囲の変更を破棄")
 
-        -- ---------------------------------------------------------------------
-        -- ファイル全体の操作
-        -- ---------------------------------------------------------------------
         map("n", "<leader>hS", gitsigns.stage_buffer, "ファイル全体をステージ")
         map("n", "<leader>hR", gitsigns.reset_buffer, "ファイル全体の変更を破棄")
 
-        -- ---------------------------------------------------------------------
-        -- Diff・Blame
-        -- ---------------------------------------------------------------------
         map("n", "<leader>hb", function()
           gitsigns.blame_line({
             full = true,
@@ -169,18 +134,12 @@ require("lazy").setup({
           gitsigns.diffthis("~")
         end, "現在ファイルと親コミットの差分")
 
-        -- ---------------------------------------------------------------------
-        -- 変更一覧
-        -- ---------------------------------------------------------------------
         map("n", "<leader>hq", gitsigns.setqflist, "現在ファイルの変更一覧")
 
         map("n", "<leader>hQ", function()
           gitsigns.setqflist("all")
         end, "リポジトリ全体の変更一覧")
 
-        -- ---------------------------------------------------------------------
-        -- 表示切り替え
-        -- ---------------------------------------------------------------------
         map(
           "n",
           "<leader>tb",
@@ -195,11 +154,6 @@ require("lazy").setup({
           "単語単位の差分表示を切り替え"
         )
 
-        -- ---------------------------------------------------------------------
-        -- Hunkをテキストオブジェクトとして扱う
-        -- vih：現在の変更箇所を選択
-        -- dih：現在の変更箇所を削除
-        -- ---------------------------------------------------------------------
         map(
           { "o", "x" },
           "ih",
@@ -212,9 +166,6 @@ require("lazy").setup({
 
   "APZelos/blamer.nvim",
 
-  -- ---------------------------------------------------------------------------
-  -- Git：リポジトリ全体の差分レビュー
-  -- ---------------------------------------------------------------------------
   {
     "esmuellert/codediff.nvim",
     cmd = "CodeDiff",
@@ -239,22 +190,16 @@ require("lazy").setup({
 
     opts = {
       diff = {
-        -- 左右比較で表示
         layout = "side-by-side",
 
-        -- 開いたとき最初の変更へ移動
         jump_to_first_change = true,
 
-        -- 変更がない部分を最初から折り畳まない
         compact = false,
 
-        -- 最後の変更から最初の変更へ循環する
         cycle_next_hunk = true,
 
-        -- 最後のファイルから最初のファイルへ循環する
         cycle_next_file = true,
 
-        -- Diff画面ではinlay hintsを無効化する
         disable_inlay_hints = true,
       },
 
@@ -262,10 +207,8 @@ require("lazy").setup({
         position = "left",
         width = 40,
 
-        -- Git indexが変わったとき自動更新する
         auto_refresh = true,
 
-        -- ステージ済み・未ステージを両方表示
         visible_groups = {
           staged = true,
           unstaged = true,
@@ -275,32 +218,23 @@ require("lazy").setup({
     },
   },
 
-  -- ---------------------------------------------------------------------------
-  -- Coding Agent：Codex CLI連携
-  -- ---------------------------------------------------------------------------
   {
     "folke/sidekick.nvim",
 
-    -- sidekick.nvimはNeovim 0.11.2以上が必要
     enabled = vim.fn.has("nvim-0.11.2") == 1,
 
     opts = {
-      -- GitHub CopilotのNext Edit Suggestionsは使用しない
-      -- Codex CLI連携だけを利用する
       nes = {
         enabled = false,
       },
 
       cli = {
-        -- 既に導入されているTelescopeを選択画面に使用する
         picker = "telescope",
 
-        -- tmux/zellijを使わずNeovim内のターミナルとして開く
         mux = {
           enabled = false,
         },
 
-        -- Codexへ送る追加プロンプト
         prompts = {
           review_changes = table.concat({
             "現在のGit変更をレビューしてください。",
@@ -325,7 +259,6 @@ require("lazy").setup({
     },
 
     keys = {
-      -- Codexを直接開く
       {
         "<leader>ac",
         function()
@@ -338,7 +271,6 @@ require("lazy").setup({
         desc = "Codexを開く／閉じる",
       },
 
-      -- 利用するCoding Agentを選択する
       {
         "<leader>as",
         function()
@@ -351,7 +283,6 @@ require("lazy").setup({
         desc = "Coding Agentを選択",
       },
 
-      -- Sidekickのウィンドウへフォーカスする
       {
         "<C-.>",
         function()
@@ -361,7 +292,6 @@ require("lazy").setup({
         desc = "Coding Agentへフォーカス",
       },
 
-      -- 現在ファイルをCodexへ送る
       {
         "<leader>af",
         function()
@@ -372,7 +302,6 @@ require("lazy").setup({
         desc = "現在ファイルをCodexへ送る",
       },
 
-      -- 選択範囲をCodexへ送る
       {
         "<leader>av",
         function()
@@ -384,7 +313,6 @@ require("lazy").setup({
         desc = "選択範囲をCodexへ送る",
       },
 
-      -- カーソル位置または選択範囲を送る
       {
         "<leader>at",
         function()
@@ -396,7 +324,6 @@ require("lazy").setup({
         desc = "現在位置をCodexへ送る",
       },
 
-      -- プロンプト一覧を表示する
       {
         "<leader>ap",
         function()
@@ -406,7 +333,6 @@ require("lazy").setup({
         desc = "Codex用プロンプトを選択",
       },
 
-      -- 現在ファイルのdiagnosticsを送る
       {
         "<leader>ad",
         function()
@@ -422,7 +348,6 @@ require("lazy").setup({
         desc = "DiagnosticsをCodexへ送る",
       },
 
-      -- Git変更をレビューさせる
       {
         "<leader>ar",
         function()
@@ -439,9 +364,6 @@ require("lazy").setup({
     },
   },
 
-  -- ---------------------------------------------------------------------------
-  -- 検索
-  -- ---------------------------------------------------------------------------
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {
@@ -449,9 +371,6 @@ require("lazy").setup({
     },
   },
 
-  -- ---------------------------------------------------------------------------
-  -- Treesitter
-  -- ---------------------------------------------------------------------------
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
@@ -459,18 +378,12 @@ require("lazy").setup({
 
   "nvim-treesitter/nvim-treesitter-textobjects",
 
-  -- ---------------------------------------------------------------------------
-  -- 編集支援
-  -- ---------------------------------------------------------------------------
   "numToStr/Comment.nvim",
   "windwp/nvim-autopairs",
   "kylechui/nvim-surround",
   "toppair/peek.nvim",
   "johmsalas/text-case.nvim",
 
-  -- ---------------------------------------------------------------------------
-  -- 補完
-  -- ---------------------------------------------------------------------------
   "hrsh7th/nvim-cmp",
   "hrsh7th/cmp-nvim-lsp",
   "hrsh7th/cmp-buffer",
@@ -478,9 +391,6 @@ require("lazy").setup({
   "hrsh7th/cmp-cmdline",
   "L3MON4D3/LuaSnip",
 
-  -- ---------------------------------------------------------------------------
-  -- LSP
-  -- ---------------------------------------------------------------------------
   "neovim/nvim-lspconfig",
   "williamboman/mason.nvim",
   "williamboman/mason-lspconfig.nvim",
@@ -489,9 +399,6 @@ require("lazy").setup({
   "folke/trouble.nvim",
   "ray-x/lsp_signature.nvim",
 
-  -- ---------------------------------------------------------------------------
-  -- ファイルツリー
-  -- ---------------------------------------------------------------------------
   {
     "nvim-tree/nvim-tree.lua",
     dependencies = {
@@ -536,9 +443,6 @@ require("lazy").setup({
 })
 
 
--- =============================================================================
--- 3. 基本設定
--- =============================================================================
 vim.o.number = true
 vim.o.relativenumber = true
 
@@ -549,23 +453,16 @@ vim.o.expandtab = true
 
 vim.o.termguicolors = true
 
--- GitSignsなどの記号を常に表示できる領域を確保する
 vim.o.signcolumn = "yes"
 
--- CursorHoldやGitSignsの更新を少し速くする
 vim.o.updatetime = 200
 
--- Coding Agentが外部から編集したファイルを再読み込み可能にする
 vim.o.autoread = true
 
--- 分割方向
 vim.o.splitright = true
 vim.o.splitbelow = true
 
 
--- =============================================================================
--- 4. Coding Agentによる外部変更の再読み込み
--- =============================================================================
 local agent_reload_group =
   vim.api.nvim_create_augroup("AgentExternalFileReload", {
     clear = true,
@@ -580,7 +477,6 @@ vim.api.nvim_create_autocmd({
   group = agent_reload_group,
 
   callback = function()
-    -- 未保存の変更があるバッファは上書きしない
     if vim.bo.modified then
       return
     end
@@ -590,14 +486,9 @@ vim.api.nvim_create_autocmd({
 })
 
 
--- =============================================================================
--- 5. プラグイン設定
--- =============================================================================
 require("nvim-autopairs").setup({})
 require("Comment").setup({})
 require("nvim-surround").setup({})
-
--- gitsignsはlazy.nvimのプラグイン定義内で設定済み
 
 require("lualine").setup({
   options = {
@@ -632,9 +523,6 @@ require("lsp_signature").setup({
 })
 
 
--- =============================================================================
--- 6. Treesitter
--- =============================================================================
 require("nvim-treesitter.configs").setup({
   ensure_installed = {
     "python",
@@ -656,9 +544,6 @@ require("nvim-treesitter.configs").setup({
 })
 
 
--- =============================================================================
--- 7. LSP
--- =============================================================================
 require("mason").setup({})
 
 local lspconfig = require("lspconfig")
@@ -681,9 +566,6 @@ require("mason-lspconfig").setup({
 })
 
 
--- =============================================================================
--- 8. 補完
--- =============================================================================
 local cmp = require("cmp")
 
 cmp.setup({
@@ -713,9 +595,6 @@ cmp.setup({
 })
 
 
--- =============================================================================
--- 9. テーマ
--- =============================================================================
 require("tokyonight").setup({
   transparent = true,
 })
@@ -752,9 +631,6 @@ for _, group in ipairs(bg_groups) do
 end
 
 
--- =============================================================================
--- 10. 通常キーマップ
--- =============================================================================
 vim.keymap.set(
   "n",
   "<leader>e",
@@ -766,9 +642,6 @@ vim.keymap.set(
 )
 
 
--- =============================================================================
--- 11. OSC52 クリップボード（最後に設定）
--- =============================================================================
 vim.o.clipboard = "unnamedplus"
 
 pcall(function()
@@ -799,7 +672,6 @@ pcall(function()
     }
   end
 end)
-
 
 
 
